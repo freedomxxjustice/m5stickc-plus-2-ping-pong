@@ -1,6 +1,5 @@
 #include <M5StickCPlus2.h>
 #include <M5Unified.h>
-#include <stdlib.h>
 
 int DISPLAY_WIDTH = 240;
 int DISPLAY_HEIGHT = 135;
@@ -18,8 +17,8 @@ struct Ball
   int radius;
   int dx;
   int dy;
-  float prevX, prevY;
-} ball = {3, DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2, 3, 4, 4, DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2};
+  double prevX, prevY;
+} ball = {3, DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2, 3, 4, 4, DISPLAY_WIDTH / 2.0, DISPLAY_HEIGHT / 2.0};
 
 struct Paddle
 {
@@ -63,6 +62,15 @@ void movePaddle(Paddle *paddle, int y)
     paddle->y = DISPLAY_HEIGHT - paddle->height;
   }
   StickCP2.Display.fillRect(paddle->x, paddle->y, paddle->width, paddle->height, TFT_WHITE);
+}
+
+void resetPaddles() {
+  StickCP2.Display.fillRect(player.x, player.y, player.width, player.height, TFT_BLACK);
+  StickCP2.Display.fillRect(enemy.x, enemy.y, enemy.width, enemy.height, TFT_BLACK);
+  player.y = DISPLAY_HEIGHT / 2;
+  enemy.y = DISPLAY_HEIGHT / 2;
+  StickCP2.Display.fillRect(player.x, player.y, player.width, player.height, TFT_WHITE);
+  StickCP2.Display.fillRect(enemy.x, enemy.y, enemy.width, enemy.height, TFT_WHITE);
 }
 
 void handleInput()
@@ -120,23 +128,25 @@ void moveBall()
   if (ball.x + ball.radius > DISPLAY_WIDTH)
   {
     scores[0]++;
-    StickCP2.Display.fillRect(DISPLAY_WIDTH / 4, 10, 100, 15, TFT_BLACK);
+    StickCP2.Display.fillRect(DISPLAY_WIDTH / 4, 10, 50, 15, TFT_BLACK);
     StickCP2.Display.setCursor(DISPLAY_WIDTH / 4, 10);
     StickCP2.Display.printf("%d", scores[0]);
     StickCP2.Speaker.tone(10000, 100);
     sleep(1);
-    StickCP2.Display.fillRect(DISPLAY_WIDTH / 4, 10, 15, 15, TFT_BLACK);
+    StickCP2.Display.fillRect(DISPLAY_WIDTH / 4, 10, 50, 15, TFT_BLACK);
+    resetPaddles();
     resetBall(-1);
   }
   if (ball.x + ball.radius < 0)
   {
     scores[1]++;
-    StickCP2.Display.fillRect((3 * DISPLAY_WIDTH) / 4, 10, 100, 15, TFT_BLACK);
+    StickCP2.Display.fillRect((3 * DISPLAY_WIDTH) / 4, 10, 50, 15, TFT_BLACK);
     StickCP2.Display.setCursor((3 * DISPLAY_WIDTH) / 4, 10);
     StickCP2.Display.printf("%d", scores[1]);
     StickCP2.Speaker.tone(10000, 100);
     sleep(1);
-    StickCP2.Display.fillRect((3 * DISPLAY_WIDTH) / 4, 10, 100, 15, TFT_BLACK);
+    StickCP2.Display.fillRect((3 * DISPLAY_WIDTH) / 4, 10, 50, 15, TFT_BLACK);
+    resetPaddles();
     resetBall(1);
   }
 }
